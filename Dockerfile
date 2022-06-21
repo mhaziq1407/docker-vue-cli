@@ -1,21 +1,16 @@
-# Choose the Image which has Node installed already
-FROM node:16
-RUN echo "NODE Version:" && node --version
-RUN echo "NPM Version:" && npm --version
+# base image
+FROM node:10.15.0
 
-# make the 'app' folder the current working directory
+# set working directory
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-# copy both 'package.json' and 'package-lock.json' (if available)
-COPY package*.json /usr/src/app
-RUN ls package*.json
+# add `/usr/src/app/node_modules/.bin` to $PATH
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-# Installed globally
-RUN npm install -g @vue/cli
-
-# install project dependencies
+# install and cache app dependencies
+COPY package.json /usr/src/app/package.json
 RUN npm install
-
+RUN npm install -g @vue/cli
 # start app
 CMD ["npm", "run", "serve"]
